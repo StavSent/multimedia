@@ -7,6 +7,6 @@ function sof = offset_comp(so, alpha)
     so_diff = [so(1); so_diff];
     sof(1) = so_diff(1);
     for i = 2:length(sof)
-        sof(i) = so_diff(i-1) + (alpha * sof(i-1));
+        sof(i) = so_diff(i) + (alpha * sof(i-1));
     end
 end

@@ -1,4 +1,4 @@
-[y, Fs] = audioread("./test.wav");
+ [y, Fs] = audioread("./test.wav");
 alpha = 32735 * 2^(-15);
 beta = 28180 * 2^(-15);
 A = [20; 20; 20; 20; 13.637; 15; 8.334; 8.824];
@@ -16,15 +16,10 @@ for i = 1:160:length(y)
     so = y(i:i+159);
     sof = offset_comp(so, alpha);
     s = preemphasis(sof, beta);
-    [r, R] = auto_corr(s);
-    a = R\r;
-    a = [1; -a];
-    larc = coeff2LAR(a, A, B);
-    coeff = LAR2coeff(prevLARc, larc, A, B);
-    prevLARc = larc;
-    d = short_term_residual(s, coeff);
-    sr = short_term_synthesis(d, sof, coeff);
-    sr_final(i:i+159) = sr;
+    [LARc, coeff, CurrFrmSTResd] = RPE_frame_ST_coder(s, prevLARc);
+    prevLARc = LARc;
+    sro = short_term_synthesis(CurrFrmSTResd, s, coeff, beta);
+    sr_final(i:i+159) = sro;
 end
 
 sound(sr_final, Fs, 16);
