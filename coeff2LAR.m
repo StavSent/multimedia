@@ -7,6 +7,6 @@ function larc = coeff2LAR(a, A, B)
     lar(abs(rc) <= 1 & abs(rc) >= 0.95) = sign(lar(abs(rc) <= 1 & abs(rc) >= 0.95)) .* ((8 * abs(lar(abs(rc) <= 1 & abs(rc) >= 0.95))) - 6.375);
 
     % Quantised LAR
-    % possibly make Nint as is in gsmts (p.21)
-    larc = round((A .* lar) + B);
+    larc = (A .* lar) + B;
+    larc = larc + (sign(larc) * 0.5);
 end
