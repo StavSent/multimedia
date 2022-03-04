@@ -15,8 +15,8 @@ for i = 1:160:length(y)
  
     s0 = y(i:i+159);
     [LARc, CurrFrmSTResd] = RPE_frame_ST_coder(s0, PrevLARc);
-    sro = RPE_frame_ST_decoder(LARc, CurrFrmSTResd, PrevLARc);
-    sr_final(i:i+159) = sro;
+    s0 = RPE_frame_ST_decoder(LARc, CurrFrmSTResd, PrevLARc);
+    sr_final(i:i+159) = s;
     PrevLARc = LARc;
 end
 

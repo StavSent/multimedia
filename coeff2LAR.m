@@ -8,5 +8,5 @@ function larc = coeff2LAR(a, A, B)
 
     % Quantised LAR
     larc = (A .* lar) + B;
-    larc = larc + (sign(larc) * 0.5);
+    larc = round(larc + (sign(larc) * 0.5));
 end

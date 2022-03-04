@@ -4,22 +4,22 @@ function [LARc, Nc, bc, CurrFrmExFull, CurrFrmSTResd] = RPE_frame_SLT_coder(s0, 
     %  Calculate d for current frame based on Short Term Analysis
     [LARc, CurrFrmSTResd] = RPE_frame_ST_coder(s0, PrevLARc);
     
+    Prevd =  zeros(120, 4);
+    Prevd(:, 1) = PrevFrmSTResd(41:160);
+    Prevd(:, 2) = [PrevFrmSTResd(81:160); CurrFrmSTResd(1:40)];
+    Prevd(:, 3) = [PrevFrmSTResd(121:160); CurrFrmSTResd(1:80)];
+    Prevd(:, 4) = PrevFrmSTResd(1:120);
+    
     %  Find R
     R = zeros(80, 1);
     b = zeros(4, 1);
     N = zeros(4, 1);
     bc = zeros(4, 1);
     for j = 1:4
-        for l = 40:120
-            %  Is this periodic?
-            PrevFrmSTResdPadded = [PrevFrmSTResd(length(PrevFrmSTResd)-l:length(PrevFrmSTResd)); PrevFrmSTResd];
-            R(l) = sum(CurrFrmSTResd(((j-1)*40)+1:(j*40)) .* PrevFrmSTResdPadded(((j-1)*40)+1:(j*40)));
-        end
-        [~, index] = max(R);
-        N(j) = index + 40;
-        PrevFrmSTResdPadded = [PrevFrmSTResd(length(PrevFrmSTResd)-N(j):length(PrevFrmSTResd)); PrevFrmSTResd];
-        b(j) = sum(CurrFrmSTResd(((j-1)*40)+1:(j*40)) .* PrevFrmSTResdPadded(((j-1)*40)+1:(j*40)));
-        b(j) = b(j) / sum(PrevFrmSTResdPadded(((j-1)*40)+1:(j*40)) .^ 2);
+        d = CurrFrmSTResd((j-1)*40+1:j*40);
+        [Nj, bj] = RPE_subframe_LTE(d, Prevd(:, j));
+        N(j) = Nj;
+        b(j) = bj;
     end
     
     bc(b <= 0.2) = 0;
@@ -28,18 +28,18 @@ function [LARc, Nc, bc, CurrFrmExFull, CurrFrmSTResd] = RPE_frame_SLT_coder(s0, 
     bc(b > 0.8) = 3;
     Nc = N;
     
+    b(bc == 0) = 0.1;
+    b(bc == 1) = 0.35;
+    b(bc == 2) = 0.65;
+    b(bc == 3) = 1;
+    
     e = zeros(160, 1);
-    x = zeros(160, 1);
     for j = 1:4
-        PrevFrmSTResdPadded = [PrevFrmSTResd(length(PrevFrmSTResd)-N(j):length(PrevFrmSTResd)); PrevFrmSTResd];
-        e((j-1)*40+1:(j*40)) = CurrFrmSTResd(((j-1)*40)+1:(j*40)) - b(j) * PrevFrmSTResdPadded(((j-1)*40)+1:(j*40));
-        
-        ePadded = [zeros(5, 1); e((j-1)*40+1:(j*40)); zeros(5, 1)];
-        for i = 1:40
-            x((j-1)*40+i) = H * ePadded(i+10:-1:i);
-        end
+        dhat = b(j) * Prevd(121-N(j):160-N(j), j);
+        e((j-1)*40+1:(j*40)) = CurrFrmSTResd((j-1)*40+1:j*40) - dhat;
+        ddot = b(j) * CurrFrmSTResd(121-N(j):160-N(j));
+        CurrFrmSTResd((j-1)*40+1:j*40) = e((j-1)*40+1:(j*40)) +  ddot;
     end
-   
-    xm = zeros(13, 4);
-    xm(:, 1) = 
+    
+    CurrFrmExFull = e;
 end
