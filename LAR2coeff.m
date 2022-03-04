@@ -25,8 +25,4 @@ function coeff = LAR2coeff(prevLARc, larc, A, B)
     poly(:, 4) = rc2poly(rc(:, 4));
     
     coeff = poly;
-%     coeff(:, 1) = poly(2:9, 1);
-%     coeff(:, 2) = poly(2:9, 2);
-%     coeff(:, 3) = poly(2:9, 3);
-%     coeff(:, 4) = poly(2:9, 4);
 end

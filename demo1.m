@@ -6,18 +6,18 @@ B = [0; 0; 4; -5; 0.184; -3.5; -0.666; -2.235];
 % sound(y, Fs, 16);
 
 sr_final = zeros(length(y), 1);
-prevLARc = zeros(8, 1);
+PrevLARc = zeros(8, 1);
 
 for i = 1:160:length(y)
     if (i+160 > length(y))
         break;
     end
  
-    so = y(i:i+159);
-    [LARc, CurrFrmSTResd] = RPE_frame_ST_coder(so, prevLARc);
-    sro = RPE_frame_ST_decoder(CurrFrmSTResd, LARc, prevLARc);
+    s0 = y(i:i+159);
+    [LARc, CurrFrmSTResd] = RPE_frame_ST_coder(s0, PrevLARc);
+    sro = RPE_frame_ST_decoder(LARc, CurrFrmSTResd, PrevLARc);
     sr_final(i:i+159) = sro;
-    prevLARc = LARc;
+    PrevLARc = LARc;
 end
 
 sound(sr_final, Fs, 16);
