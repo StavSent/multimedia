@@ -1,6 +1,4 @@
 function [LARc, Nc, bc, CurrFrmExFull, CurrFrmSTResd] = RPE_frame_SLT_coder(s0, PrevFrmSTResd, PrevLARc)
-    H = [-134, -374, 0, 2054, 5741, 8192, 5741, 2054, 0, -374, -134] / (2^13);
-
     %  Calculate d for current frame based on Short Term Analysis
     [LARc, CurrFrmSTResd] = RPE_frame_ST_coder(s0, PrevLARc);
     
@@ -17,9 +15,7 @@ function [LARc, Nc, bc, CurrFrmExFull, CurrFrmSTResd] = RPE_frame_SLT_coder(s0, 
     bc = zeros(4, 1);
     for j = 1:4
         d = CurrFrmSTResd((j-1)*40+1:j*40);
-        [Nj, bj] = RPE_subframe_LTE(d, Prevd(:, j));
-        N(j) = Nj;
-        b(j) = bj;
+        [N(j), b(j)] = RPE_subframe_LTE(d, Prevd(:, j));
     end
     
     bc(b <= 0.2) = 0;
@@ -33,13 +29,10 @@ function [LARc, Nc, bc, CurrFrmExFull, CurrFrmSTResd] = RPE_frame_SLT_coder(s0, 
     b(bc == 2) = 0.65;
     b(bc == 3) = 1;
     
-    e = zeros(160, 1);
+    CurrFrmExFull = zeros(160,1);
     for j = 1:4
-        dhat = b(j) * Prevd(121-N(j):160-N(j), j);
-        e((j-1)*40+1:(j*40)) = CurrFrmSTResd((j-1)*40+1:j*40) - dhat;
-        ddot = b(j) * CurrFrmSTResd(121-N(j):160-N(j));
-        CurrFrmSTResd((j-1)*40+1:j*40) = e((j-1)*40+1:(j*40)) +  ddot;
+        d_ddot = b(j) * Prevd(121-N(j):160-N(j), j);
+        CurrFrmExFull((j-1)*40+1:(j*40)) = CurrFrmSTResd((j-1)*40+1:j*40) - d_ddot;
+        CurrFrmSTResd((j-1)*40+1:j*40) = CurrFrmExFull((j-1)*40+1:(j*40)) +  d_ddot;
     end
-    
-    CurrFrmExFull = e;
 end

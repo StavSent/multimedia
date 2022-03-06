@@ -1,4 +1,4 @@
-function larc = coeff2LAR(a, A, B)
+function LARc = coeff2LAR(a, A, B)
     rc = poly2rc(a);
 
     lar = rc;
@@ -7,6 +7,5 @@ function larc = coeff2LAR(a, A, B)
     lar(abs(rc) <= 1 & abs(rc) >= 0.95) = sign(lar(abs(rc) <= 1 & abs(rc) >= 0.95)) .* ((8 * abs(lar(abs(rc) <= 1 & abs(rc) >= 0.95))) - 6.375);
 
     % Quantised LAR
-    larc = (A .* lar) + B;
-    larc = round(larc + (sign(larc) * 0.5));
+    LARc = round((A .* lar) + B);
 end

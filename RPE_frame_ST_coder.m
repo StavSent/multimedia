@@ -10,12 +10,9 @@ function [LARc, CurrFrmSTResd] = RPE_frame_ST_coder(s0, PrevLARc)
     s = preemphasis(sof, beta);
     
     [r, R] = auto_corr(s);
-    a = R\r;
-    a = [1; -a];
-    larc = coeff2LAR(a, A, B);
-    coeff = LAR2coeff(PrevLARc, larc, A, B);
-    d = short_term_residual(s, coeff);
-    
-    LARc = larc;
-    CurrFrmSTResd = d;
+    a = [1; -R\r];
+
+    LARc = coeff2LAR(a, A, B);
+    a = LAR2coeff(PrevLARc, LARc, A, B);
+    CurrFrmSTResd = short_term_residual(s, a);
 end

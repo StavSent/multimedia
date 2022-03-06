@@ -6,5 +6,5 @@ function [N, b] = RPE_subframe_LTE(d, Prevd)
     end
     [maxR, index] = max(R);
     N = index + 39;
-    b = maxR / sum(Prevd(index:N).^2);
+    b = maxR / sum(Prevd(121-N:160-N).^2);
 end

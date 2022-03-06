@@ -1,6 +1,5 @@
 % Function for Offset Compensation
 function sof = offset_comp(so, alpha)
-    % Create Zero Like array of input to make calculations faster
     sof = zeros(length(so), 1);
     
     so_diff = diff(so);

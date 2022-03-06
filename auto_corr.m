@@ -6,5 +6,5 @@ function [r, R] = auto_corr(s)
     end
     
     R = toeplitz(r(1:8), r(1:8));
-     r = r(2:9);
+    r = r(2:9);
 end

@@ -1,6 +1,6 @@
-function coeff = LAR2coeff(prevLARc, larc, A, B) 
-    LAR = (larc - B) ./ A;
-    prevLAR = (prevLARc - B) ./ A;
+function a = LAR2coeff(PrevLARc, LARc, A, B) 
+    LAR = (LARc - B) ./ A;
+    prevLAR = (PrevLARc - B) ./ A;
     
     coeff = zeros(8, 4);
     poly = zeros(9, 4);
@@ -24,5 +24,5 @@ function coeff = LAR2coeff(prevLARc, larc, A, B)
     poly(:, 3) = rc2poly(rc(:, 3));
     poly(:, 4) = rc2poly(rc(:, 4));
     
-    coeff = poly;
+    a = poly;
 end

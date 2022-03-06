@@ -6,15 +6,10 @@ function [s0, CurrFrmSTResd] = RPE_frame_SLT_decoder(LARc, Nc, bc, CurrFrmExFull
     b(bc == 3) = 1;
     N = Nc;
     
-%     mirrorIdx = length(CurrFrmSTResd):-1:1;
-%     mirroredCurrFrmSTResd = [CurrFrmSTResd(mirrorIdx); CurrFrmSTResd];
-    CurrFrmSTResd = zeros(length(PrevFrmSTResd), 1);
+    SFhistory = PrevFrmSTResd;
     for j = 1:4
-        if (j ~= 4)
-            CurrFrmSTResd((j-1)*40+1:j*40) = CurrFrmExFull((j-1)*40+1:(j*40)) + b(j) * PrevFrmSTResd(121-N(j):160-N(j));
-        else
-            CurrFrmSTResd((j-1)*40+1:j*40) = CurrFrmExFull((j-1)*40+1:(j*40)) + b(j) * CurrFrmSTResd(121-N(j):160-N(j));
-        end 
+        SFhistory = [SFhistory; CurrFrmExFull((j-1)*40+1:(j*40)) + b(j) * SFhistory(121+40*j-N(j):160+40*j-N(j))];
     end
+    CurrFrmSTResd = SFhistory(161:320);
     s0 = RPE_frame_ST_decoder(LARc, CurrFrmSTResd, PrevLARc);
 end
