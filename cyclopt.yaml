@@ -1,0 +1,21 @@
+global:
+    branches_exclude:
+        - testing_branch
+    violations:
+        exclude: 
+            - Position Literals First In Comparisons
+        files_ignore:
+            - /tests/*
+modules:
+    - path: "/tests"
+      languages:
+        - Java
+      violations:
+        include:
+          - Position Literals First In Comparisons
+        exclude:
+          - Loose Coupling
+        files_ignore:
+          - /src/*
+        files_include:
+          - /tests/*
